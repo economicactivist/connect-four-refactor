@@ -6,10 +6,11 @@
  */
 
 class ConnectFour {
-  constructor() {
-    this.width = 7
-    this.height = 6
-    this.currPlayer = 1
+  constructor(p1, p2, width = 7, height = 6) {
+    this.width = width
+    this.height = height
+    this.players = [p1, p2]
+    this.currPlayer = p1
     this.board = []
   }
 
@@ -19,11 +20,11 @@ class ConnectFour {
   }
 
   resetGame = () => {
-    const boardToEmpty = document.querySelector("#board")
+    const boardToEmpty = document.querySelector('#board')
     while (boardToEmpty.firstChild) {
       boardToEmpty.removeChild(boardToEmpty.firstChild)
     }
-    
+
     this.board = []
   }
 
@@ -77,13 +78,13 @@ class ConnectFour {
     let id = `${y}-${x}`
     const cellToFill = document.getElementById(id)
     const newPiece = document.createElement('div')
-    newPiece.classList.add('piece', `p${this.currPlayer}`)
+    newPiece.classList.add('piece')
+    newPiece.style.backgroundColor = this.currPlayer.color
     cellToFill.append(newPiece)
   }
   endGame = msg => {
     alert(msg)
     this.resetGame()
-    
   }
 
   handleClick = evt => {
@@ -98,14 +99,15 @@ class ConnectFour {
     this.placeInTable(y, x)
 
     if (this.checkForWin()) {
-      return this.endGame(`Player ${this.currPlayer} won!`)
+      return this.endGame(`Player ${this.currPlayer.color} won!`)
     }
 
     if (this.board.every(row => row.every(cell => cell))) {
       return this.endGame('Tie!')
     }
 
-    this.currPlayer = this.currPlayer === 1 ? 2 : 1
+    this.currPlayer =
+      this.currPlayer === this.players[0] ? this.players[1] : this.players[0]
   }
 
   checkForWin = () => {
@@ -155,9 +157,17 @@ class ConnectFour {
   }
 }
 
-let connectFourGame = new ConnectFour()
+class Player {
+  constructor(color) {
+    this.color = color
+  }
+}
 
 const startBtn = document.querySelector('#start')
 startBtn.addEventListener('click', () => {
+  let p1 = new Player(document.getElementById('p1-color').value)
+  let p2 = new Player(document.getElementById('p2-color').value)
+  let connectFourGame = new ConnectFour(p1, p2)
+ 
   connectFourGame.startGame()
 })
